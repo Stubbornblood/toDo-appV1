@@ -5,6 +5,7 @@ const app = express()
 app.set('view engine','ejs');
 
 let items = []
+let workItems=[]
 app.use(bodyParser.urlencoded({extended:true}))
 
 app.use(express.static(__dirname+'\\public'))
@@ -22,17 +23,37 @@ app.get('/',(req,res)=>{
     };
     let day = today.toLocaleDateString('en-US',options)
 
-    res.render('list',{kindofday : day, newListItems:items})
+    res.render('list',{listTitle:day, newListItems:items})
 });
 
 
-app.post('/',(req,res)=>{
-    let item = req.body.newItem;
-    items.push(item);
-    res.redirect("/")
+app.get('/work',(req,res)=>{
+    res.render('list',{listTitle:"Work",newListItems:workItems})
 })
 
+app.post('/',(req,res)=>{
 
+    console.log(req.body.list)
+
+    let item = req.body.newItem;
+
+    if(req.body.list==="Work"){
+      workItems.push(item);
+      res.redirect('/work')
+    }else{
+      items.push(item);
+      res.redirect("/")
+    }
+})
+app.post('/',(req,res)=>{
+    let item= req.body.newItem;
+    workItems.push(item)
+    res.redirect("/work")
+})
+
+app.get('/about',(req,res)=>{
+    res.render('about');
+});
 
 
 app.listen(3000,(req,res)=>{
